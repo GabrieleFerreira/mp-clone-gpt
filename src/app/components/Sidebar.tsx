@@ -1,14 +1,39 @@
+"use client";
+import { Chats } from "@/hooks/useChat";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface SidebarProps {
   isVisible: boolean;
+  chats: Chats;
+  deleteChat: (chatId: string) => void;
+  selectedChat: string | null;
+  selectChat: (chatId: string) => void;
 }
-export default function Sidebar({ isVisible }: SidebarProps) {
+export default function Sidebar({
+  isVisible,
+  chats,
+  deleteChat,
+  selectChat,
+  selectedChat,
+}: SidebarProps) {
   const [isOpen, setIsOpen] = useState<boolean>(window.innerWidth > 768);
   const handleClick = () => {
     setIsOpen((prev) => !prev);
+  };
+
+  const handleChatClick = (chatIndex: string) => {
+    selectChat(chatIndex);
+  };
+
+  const handleDeleteClick = (
+    ev: React.MouseEvent<HTMLButtonElement>,
+    chatIndex: string
+  ) => {
+    ev.stopPropagation();
+
+    deleteChat(chatIndex);
   };
   return (
     <>
@@ -56,7 +81,44 @@ export default function Sidebar({ isVisible }: SidebarProps) {
               </button>
             </div>
 
-            {/* { Lista de conversas} */}
+            <div className="mt-6 flex flex-col gap-3 ">
+              {Object.keys(chats).map((chatIndex) => (
+                <div
+                  key={chatIndex}
+                  className={cn(
+                    "flex justify-between items-center py-2 px-3 bg-background-light rounded-lg  cursor-pointer",
+                    selectedChat === chatIndex && "border-border border-2"
+                  )}
+                  onClick={() => handleChatClick(chatIndex)}
+                >
+                  <div className=" flex items-center gap-3 mr-2">
+                    <Image
+                      src="/images/balloon.svg"
+                      width={17}
+                      height={18}
+                      alt="Icone de Chat"
+                    ></Image>
+
+                    <span className="text-white truncate text-ellipsis max-w-[180px]">
+                      {chats[chatIndex].title}
+                    </span>
+                  </div>
+
+                  <button
+                    className=" disabled:invisible"
+                    disabled={Object.keys(chats).length === 1}
+                    onClick={(ev) => handleDeleteClick(ev, chatIndex)}
+                  >
+                    <Image
+                      src="/images/trash.svg"
+                      width={13}
+                      height={18}
+                      alt="Icone da Lixeira Para apagar conversa"
+                    ></Image>
+                  </button>
+                </div>
+              ))}
+            </div>
           </nav>
         </>
       )}

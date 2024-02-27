@@ -1,22 +1,23 @@
+import { Message } from "@/hooks/useChat";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
 import Markdown from "react-markdown";
-export interface Message {
-  role: "user" | "assistent";
-  content: string;
-}
+
 interface ChatMessagesProps {
-  message: Message[];
+  messages: Message[];
   isLoading: boolean;
 }
-export const ChatMessages = ({ message, isLoading }: ChatMessagesProps) => {
+export const ChatMessages = ({
+  messages: message,
+  isLoading,
+}: ChatMessagesProps) => {
   return (
     <div className="flex flex-col w-full justify-start items-center  overflow-y-auto ">
       {message?.map((message, index) => (
         <MessageBlock key={index} message={message} />
       ))}
       {isLoading && (
-        <MessageBlock message={{ role: "assistent", content: "" }} isLoading />
+        <MessageBlock message={{ role: "assistant", content: "" }} isLoading />
       )}
     </div>
   );
